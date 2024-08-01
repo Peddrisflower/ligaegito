@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Futebol - Liga do Egito</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        h1 {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            margin: 0;
+        }
+        .container {
+            padding: 2rem;
+        }
+        section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        .trophy {
+            width: 200px;
+            margin: 1rem;
+        }
+        #resultados-liga, #resultados-copa, #resultados-supercopa {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+        .player-list {
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulador de Futebol - Liga do Egito</h1>
+
+    <div class="container">
+        <section id="selecionar-time">
+            <h2>Escolha seu time</h2>
+            <select id="time-select">
+                <option value="">Selecione um time</option>
+            </select>
+            <button onclick="escolherTime()">Escolher Time</button>
+        </section>
+
+        <section id="contratar-jogadores" style="display: none;">
+            <h2>Contrate Jogadores</h2>
+            <div id="player-list" class="player-list"></div>
+            <button onclick="contratarJogadores()">Contratar Jogadores</button>
+        </section>
+
+        <section id="simular" style="display: none;">
+            <h2>Simule a Temporada</h2>
+            <button onclick="simularLiga()">Simular Liga</button>
+            <button onclick="simularCopa()">Simular Copa</button>
+            <button onclick="simularSupercopa()">Simular Supercopa</button>
+            <button onclick="novaTemporada()">Nova Temporada</button>
+            <div id="resultados-liga"></div>
+            <div id="resultados-copa"></div>
+            <div id="resultados-supercopa"></div>
+        </section>
+
+        <section id="trofeus" style="display: none;">
+            <h2>Troféus</h2>
+            <img id="trofeu-liga" class="trophy" src="" alt="Troféu Liga">
+            <img id="trofeu-copa" class="trophy" src="" alt="Troféu Copa">
+            <img id="trofeu-supercopa" class="trophy" src="" alt="Troféu Supercopa">
+        </section>
+    </div>
+
+    <script>
+        // Dados dos clubes e jogadores
+        const clubes = ['Al Ahly', 'Zamalek', 'Pyramids', 'Ismaily', 'Al Ittihad', 'El Gouna', 'Wadi Degla', 'Smouha'];
+        const jogadores = ['Ahmed Hegazi', 'Mohamed Salah', 'Trezeguet', 'Mahmoud Hassan', 'Mohamed Elneny', 'Ali Gabr', 'Hossam Hassan', 'Mohamed Nagy', 'Hany Said'];
+
+        let timeEscolhido = '';
+        let jogadoresContratados = [];
+
+        // Popula a lista de times no seletor
+        const timeSelect = document.getElementById('time-select');
+        clubes.forEach(clube => {
+            const option = document.createElement('option');
+            option.value = clube;
+            option.textContent = clube;
+            timeSelect.appendChild(option);
+        });
+
+        function escolherTime() {
+            timeEscolhido = timeSelect.value;
+            if (timeEscolhido) {
+                document.getElementById('contratar-jogadores').style.display = 'block';
+                document.getElementById('simular').style.display = 'block';
+                document.getElementById('trofeus').style.display = 'none';
+                mostrarJogadoresDisponiveis();
+            } else {
+                alert('Por favor, escolha um time.');
+            }
+        }
+
+        function mostrarJogadoresDisponiveis() {
+            const playerList = document.getElementById('player-list');
+            playerList.innerHTML = '';
+            jogadores.forEach(jogador => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = jogador;
+                checkbox.id = jogador;
+                const label = document.createElement('label');
+                label.htmlFor = jogador;
+                label.textContent = jogador;
+                playerList.appendChild(checkbox);
+                playerList.appendChild(label);
+                playerList.appendChild(document.createElement('br'));
+            });
+        }
+
+        function contratarJogadores() {
+            jogadoresContratados = [];
+            document.querySelectorAll('#player-list input[type="checkbox"]:checked').forEach(checkbox => {
+                jogadoresContratados.push(checkbox.value);
+            });
+            alert('Jogadores contratados: ' + jogadoresContratados.join(', '));
+        }
+
+        function simularLiga() {
+            let resultados = '<h3>Resultados da Liga</h3><ul>';
+            clubes.forEach(clube => {
+                let pontos = Math.floor(Math.random() * 100); // Pontos aleatórios
+                resultados += `<li>${clube}: ${pontos} pontos</li>`;
+            });
+            resultados += '</ul>';
+            document.getElementById('resultados-liga').innerHTML = resultados;
+            mostrarTrofeus();
+        }
+
+        function simularCopa() {
+            const campeoes = clubes[Math.floor(Math.random() * clubes.length)];
+            const finalista = clubes[Math.floor(Math.random() * clubes.length)];
+            let resultados = `<h3>Resultados da Copa</h3><p>Campeão: ${campeoes}</p><p>Finalista: ${finalista}</p>`;
+            document.getElementById('resultados-copa').innerHTML = resultados;
+            mostrarTrofeus();
+        }
+
+        function simularSupercopa() {
+            const campeaoLiga = clubes[Math.floor(Math.random() * clubes.length)];
+            const campeaoCopa = clubes[Math.floor(Math.random() * clubes.length)];
+            let resultados = `<h3>Resultados da Supercopa</h3><p>Campeão da Liga: ${campeaoLiga}</p><p>Campeão da Copa: ${campeaoCopa}</p>`;
+            document.getElementById('resultados-supercopa').innerHTML = resultados;
+            mostrarTrofeus();
+        }
+
+        function mostrarTrofeus() {
+            document.getElementById('trofeu-liga').src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/FIFA_World_Cup_Trophy.svg/1200px-FIFA_World_Cup_Trophy.svg.png'; // Troféu Liga
+            document.getElementById('trofeu-copa').src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/UEFA_Champions_League_Trophy.svg/1200px-UEFA_Champions_League_Trophy.svg.png'; // Troféu Copa
+            document.getElementById('trofeu-supercopa').src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/FA_Super_Cup_Trophy.svg/1200px-FA_Super_Cup_Trophy.svg.png'; // Troféu Supercopa
+            document.getElementById('trofeus').style.display = 'block';
+        }
+
+        function novaTemporada() {
+            timeEscolhido = '';
+            jogadoresContratados = [];
+            document.getElementById('time-select').selectedIndex = 0;
+            document.getElementById('contratar-jogadores').style.display = 'none';
+            document.getElementById('simular').style.display = 'none';
+            document.getElementById('trofeus').style.display = 'none';
+            document.getElementById('resultados-liga').innerHTML = '';
+            document.getElementById('resultados-copa').innerHTML = '';
+            document.getElementById('resultados-supercopa').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
